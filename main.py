@@ -6,13 +6,13 @@ from PIL import Image
 from transformers import BlipProcessor, BlipForConditionalGeneration
 
 
-TOKEN = "6854013673:AAEwgPkyuEfCR76uZfY276VP23aVD_UIcl8"
-GOOGLE_API_KEY = 'AIzaSyAqEKOKf6iPtY7q_ka18nwbMdwvohK6j6A'
-GOOGLE_CX = 'f31918ec8b418499b'
+TOKEN = "yourTelegramBotToken"
+GOOGLE_API_KEY = 'yourGoogleApi'
+GOOGLE_CX = 'yourGoogleCx'
 
 
-image_path = "/content/photo.jpg"
-with open('/content/drive/MyDrive/ASUtest/city.list.json', 'r') as file:
+image_path = "photo.jpg"
+with open('ASUtest/city.list.json', 'r') as file:
     cityLists = json.load(file)
 
 processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-base")
