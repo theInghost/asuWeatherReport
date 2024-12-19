@@ -4,6 +4,7 @@ import random
 import telebot
 from PIL import Image
 from transformers import BlipProcessor, BlipForConditionalGeneration
+from googleapiclient.discovery import build
 
 
 TOKEN = "yourTelegramBotToken"
@@ -12,7 +13,7 @@ GOOGLE_CX = 'yourGoogleCx'
 
 
 image_path = "photo.jpg"
-with open('ASUtest/city.list.json', 'r') as file:
+with open('city.list.json', 'r') as file:
     cityLists = json.load(file)
 
 processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-base")
@@ -23,10 +24,10 @@ bot = telebot.TeleBot(TOKEN)
 
 
 def weather_request(town):
-  return 'https://api.openweathermap.org/data/2.5/weather?q=' + town + '&appid=28e430af1640c007d30dbe021c9a8a2d&units=metric&lang=Ru'
+  return 'https://api.openweathermap.org/data/2.5/weather?q=' + town + '&appid=owTokenHere&units=metric&lang=Ru'
 
 def weather_request_id(cityId):
-  return 'https://api.openweathermap.org/data/2.5/weather?id=' + str(cityId) +'&appid=28e430af1640c007d30dbe021c9a8a2d&units=metric&lang=Ru'
+  return 'https://api.openweathermap.org/data/2.5/weather?id=' + str(cityId) +'&appid=owTokenHere&units=metric&lang=Ru'
 
 def generate_caption(image_path):
     image = Image.open(image_path)
@@ -91,10 +92,7 @@ def send_weather_Town(message):
     args = message.text.split()[1:]
     if not args:
         help_text = (
-            "Использование команды /weather:\n"
-            "/weather [город]\n"
-            "Пример: /weather Барнаул"
-        )
+            "Использование команды /weather:\n/weather [город]\nПример: /weather Барнаул")
         bot.send_message(message.chat.id, help_text)
     else:
         city = ' '.join(args)
@@ -114,13 +112,11 @@ def handle_about(message):
 def send_weather_compare(message):
     text = message.text.replace('/compare', '').strip()
     if not text:
-        bot.send_message(message.chat.id, "Пожалуйста, введите города через запятую после команды /compare. Например: /compare Барнаул, Томская область, Новосибирск")
+        bot.send_message(message.chat.id, "Введите города через запятую после команды /compare. Например: /compare Барнаул, Томская область, Новосибирск")
     else:
         cities = [city.strip() for city in text.split(',')]
-        print(cities)
-        print(type(cities))
         if len(cities) == 1:
-            bot.send_message(message.chat.id, "Пожалуйста, введите еще один город через запятую. Например: /compare Барнаул, Томская область")
+            bot.send_message(message.chat.id, "Введите еще один город через запятую. Например: /compare Барнаул, Томская область")
         else:
             humidity_dict = {}
             humidityList = "Относительная влажность в выбраных городах:\n"
@@ -132,7 +128,7 @@ def send_weather_compare(message):
                 humidityList += f"Г. {data.get('name')} = {data.get('main', {}).get('humidity')}%\n"
               else:
                 bot.send_message(message.chat.id, f"Название города: {town} - содержит ошибку, оно было автоматические исключено из сравнения")
-            bot.send_message(message.chat.id, f"{humidityList}\nНаименьшая из низ {humidity_dict[min(humidity_dict, key=humidity_dict.get)]}% в городе {min(humidity_dict, key=humidity_dict.get)}")
+            bot.send_message(message.chat.id, f"{humidityList}\nНаименьшая из них {humidity_dict[min(humidity_dict, key=humidity_dict.get)]}% в городе {min(humidity_dict, key=humidity_dict.get)}")
 
 
 @bot.message_handler(content_types=['photo'])
